@@ -1,0 +1,16 @@
+{% extends 'methodist/base.html' %}
+{% load static %}
+{% load maintag %}
+
+{% block content %}
+    {{ semesters.semester }}
+    {{ semesters.final_semester }}
+    <br><br><br>
+    {% get_list_semesters semesters.semester semesters.final_semester as semesters_list %}
+    {% for i in semesters_list %}
+        <p><a href="{% url 'rating' semesters.id i %}">{{ i }}</a></p>
+    {% endfor %}
+{% endblock %}
+
+{% block js %}
+{% endblock %}

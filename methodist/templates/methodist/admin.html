@@ -1,0 +1,29 @@
+{% extends 'admin/change_form.html' %}
+{% load static %}
+
+{% block admin_change_form_document_ready %}
+    {{ block.super }}
+    <script>
+
+        (function ($) {
+            $('#id_group').on('click', function () {
+                if ($('#id_group').prop('value') === '1') {
+                    $('#student-group').css('display', 'block');
+                } else {
+                    $('#student-group').css('display', 'none')
+                    $('#id_student-0-year_entry').prop('value', null)
+                    $('#id_student-0-educational_program').prop('value', null)
+                    $('#id_student-0-group').prop('value', null)
+                }
+            })
+            if ($('#id_group').prop('value') === '1') {
+                $('#student-group').css('display', 'block');
+                console.log($('#id_group').prop('value'));
+            } else {
+                $('#student-group').css('display', 'none')
+            }
+        })
+        (django.jQuery);
+
+    </script>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'methodist/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+        <h1 class="text-center mb-10" id="h1">Студенти без групи</h1>
+        <div class="row">
+        {% for i in students %}
+            <div style="margin-bottom: 50px;" id="row-{{ i.id }}" class="col-sm-3">
+                <div class="card" style="width: 15rem;">
+                    <div class="card-body">
+                      <p class="card-text">Поле 1: {{ i.username }}</p>
+                      <p class="card-text">Поле 2: {{ i.first_name }}</p>
+                      <p class="card-text">Поле 3: {{ i.last_name }}</p>
+                      <p class="card-text">Поле 4: {{ i.surname }}</p>
+                      <a class="btn btn-success" data-toggle="modal" data-target="#exampleModal" onclick="studentId('{{ i.id }}')">добавити</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+        </div>
+
+
+    {#        <form method="post" action="" id="form-add-student">#}
+    {#            {% csrf_token %}#}
+{#    <div id="form-edit">#}
+{#        {{ form.as_p }}#}
+{#        <a class="create-student" id="" onclick="createStudent()">Create</a>#}
+{#    </div>#}
+
+{#    <form method="post" action="{% url 'create-student' 1 %}">#}
+{#    {% csrf_token %}#}
+{#        {{ form.as_p }}#}
+{#        <input type="submit">#}
+{#    </form>#}
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header" style="justify-content: center">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            </button>
+          </div>
+
+            <div class="modal-body">
+            <div id="form-edit">
+                <div class="input-group mb-3">
+                  <label class="input-group-text" for="inputGroupSelect01">Група</label>
+                  <select class="form-select" id="inputGroupSelect01">
+                    {% for i in form.group %}
+                        {{ i }}
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="input-group mb-3">
+                  <label class="input-group-text" for="inputGroupSelect01">Освітня програма</label>
+                  <select class="form-select" id="inputGroupSelect02">
+                    {% for i in form.educational_program %}
+                        {{ i }}
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputGroupSelect01">Дата</label>
+                    {{ form.year_entry }}
+                </div>
+
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="fun()">
+              Close
+            </button>
+            <a class="btn btn-success create-student" id="" onclick="createStudent()" data-dismiss="modal">Create</a>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+    <script src="{% static 'methodist/js/without_group.js' %}">
+    </script>
+{% endblock %}

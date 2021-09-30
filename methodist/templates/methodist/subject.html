@@ -1,0 +1,184 @@
+{% extends 'methodist/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="text-center mb-10" id="h1">Наявні предмети</h1>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Назва</th>
+                    <th scope="col">Група</th>
+                    <th scope="col">Викладачі</th>
+                    <th scope="col">Кількість годин</th>
+                    <th scope="col">Кількість кредитів</th>
+                    <th scope="col">Семестр</th>
+                    <th scope="col">Кінцевий семестр</th>
+                    <th scope="col">Форма контролю</th>
+                    <th scope="col">Кінцевий</th>
+                    <th scope="col">Moodle</th>
+                    <th scope="col">Редагувати</th>
+                    <th scope="col">Видалити</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                {% for subject in subjects %}
+                    <tr id="row_{{ subject.id }}">
+                        <td><a href="{% url 'semesters' subject.id %}" id="name_subject">{{ subject.name_subject }}</a></td>
+                        <td id="group" data-id="{{ subject.group.id }}">{{ subject.group.name }}</td>
+                        <td id="teachers">
+                            {% for i in subject.teachers.all %}
+                                {{ i }}<br>
+                            {% endfor %}
+                        </td>
+                        <td id="hours">{{ subject.hours }}</td>
+                        <th scope="row" id="loans">{{ subject.loans }}</th>
+
+                        <td id="semester">{{ subject.semester }}</td>
+                        <td id="final_semester">{{ subject.final_semester }}</td>
+
+                        <td id="form_of_control">{{ subject.form_of_control }}</td>
+                        <td id="finally_subject">{% if subject.finally_subject %}Так{% else %}Ні{% endif %}</td>
+                        <td><a href="{{ subject.url_on_moodle }}" id="link">Посилання на Moodle</a></td>
+                        <td>
+                            <a onclick="updateForm('{{ subject.id }}')"  data-toggle="modal" data-target="#exampleModal1" class="btn btn-warning">Редагувати</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-danger" onclick="deleteSubject({{ subject.id }})">Видалити</a>
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <a href="#" class="btn btn-success"  data-toggle="modal" data-target="#exampleModal">Добавити предмет</a>
+    </div>
+    <br>
+    <br>
+
+    <br><br><br>
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header" style="justify-content: center">
+            <h5 class="modal-title" id="exampleModalLabel">Добавити предмет</h5>
+            </button>
+          </div>
+
+          <div class="modal-body">
+              <form action="{% url 'create_subjects' %}" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+            </form>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">
+              Close
+            </button>
+            <a class="btn btn-primary" onclick="createSubject()" data-dismiss="modal">Зберегти</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br><br><br>
+
+    <br><br>
+    <br>
+
+    <hr>
+    <br><br><br>
+    <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header" style="justify-content: center">
+            <h5 class="modal-title" id="exampleModalLabel">Редагувати предмет</h5>
+            </button>
+          </div>
+
+            <div class="modal-body">
+
+
+
+                <form action="" method="post" id="form_update">
+                    {% csrf_token %}
+                    <p><input type="text" name="name_subject" maxlength="60" required id="id_name_subject1"></p>
+                    <p>
+
+                        <select name="group" required id="id_group1">
+                            <option value="" selected>---------</option>
+                            {% for i in group %}
+                                <option value="{{ i.id }}">{{ i.name }}</option>
+                            {% endfor %}
+                        </select>
+
+                    </p>
+                    <p><input type="number" name="hours" min="0" required id="id_hours1"></p>
+
+                    <p><select name="semestr" required id="id_semestr1">
+
+                        <option value="" selected>---------</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+
+                    </select></p>
+
+                    <p><select name="semestr" required id="id_semestr2">
+
+                        <option value="" selected>---------</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+
+                    </select></p>
+
+                    <p><select name="teachers" required id="id_teachers1" multiple>
+
+                        {% for i in teachers %}
+                            <option value="{{ i.id }}">{{ i.username }}</option>
+                        {% endfor %}
+
+                    </select></p>
+                    <p><input type="text" name="form_of_control" maxlength="20" required id="id_forma_control1"></p>
+                    <p><input type="url" name="url_on_moodle" maxlength="200" required id="id_url_on_moodle1"></p>
+                    <p><input type="checkbox" name="finally_subject" id="finally-subject"></p>
+                </form>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="fun()">
+                      Close
+                    </button>
+                    <a onclick="updateSubject()" class="button btn btn-success" id="" data-dismiss="modal">ОНОВИТИ</a>
+                </div>
+
+            </div>
+          </div>
+          </div>
+      </div>
+
+
+
+
+{% endblock %}
+
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+
+    <script src="{% static 'methodist/js/subject.js' %}">
+
+    </script>
+{% endblock %}

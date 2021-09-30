@@ -1,0 +1,146 @@
+{% extends 'methodist/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="text-center mb-10" id="h1">Наявні студенти</h1>
+
+{#        <form method="get" action="{% url 'list_student' %}">#}
+{#            {{ students.form.as_p }} <br>#}
+{#            <a onclick="filterStudents()" class="btn btn-danger">Пошук</a>#}
+{#            <input type="submit" id="filter" onclick="filterData()">#}
+        </form>
+
+        <hr>
+            <button class="accordion-button" data-toggle="collapse" data-target="#demo">Фільтри</button>
+            <div id="demo" class="collapse">
+                <br>
+                
+                {{ students.form.as_p }} <br>
+
+                <a onclick="filterStudents()" class="btn btn-danger">Пошук</a>
+            </div>
+        <hr>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">
+                        <a onclick="filterStudents('id')">ID</a>
+                    </th>
+
+                    <th scope="col">
+                        <a onclick="filterStudents('user__last_name')">Прізвище</a>
+                    </th>
+
+                    <th scope="col">
+                        <a onclick="filterStudents('user__first_name')">Ім'я</a>
+                    </th>
+
+                    <th scope="col">
+                        <a onclick="filterStudents('user__surname')">По батькові</a>
+                    </th>
+
+                    <th scope="col">
+                        <a onclick="filterStudents('year_entry')">Рік випуску</a>
+                    </th>
+
+                    <th scope="col">
+                        <a onclick="filterStudents('educational_program')">Освітня програма</a>
+                    </th>
+
+                    <th scope="col">
+                        <a onclick="filterStudents('group')">Група</a>
+                    </th>
+
+                    <th scope="col">Редагувати</th>
+                    <th scope="col">Видалити</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                {% for student in students.qs %}
+                    <tr id="row_{{ student.id }}">
+                        <th scope="row">{{ student.id }}</th>
+                        <td>{{ student.user__last_name }}</td>
+                        <td>{{ student.user__first_name }}</td>
+                        <td>{{ student.user__surname }}</td>
+                        <td id="date_{{ student.id }}">{{ student.year_entry|date:"Y-m-d" }}</td>
+                        <td id="educational_program_{{ student.id }}">{{ student.educational_program__name }}</td>
+                        <td id="group_{{ student.id }}">{{ student.group__name }}</td>
+                        <td data-toggle="modal" data-target="#exampleModal" onclick="getIdStudent('{{ student.id }}')">
+                            <a class="btn btn-warning">Редагувати</a>
+                        </td>
+                        <th scope="row">
+                            <a class="btn btn-danger" onclick="deleteStudent('{{ student.id }}')">Видалити</a>
+                        </th>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+{#    <div id="form-edit">#}
+{#        {{ form.as_p }}#}
+{#        <a class="update" id="" onclick="updateStudent()">Оновити</a>#}
+{#    </div>#}
+
+
+
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header" style="justify-content: center">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            </button>
+          </div>
+
+            <div class="modal-body">
+                <div id="form-edit">
+
+                    <div class="input-group mb-3">
+                      <label class="input-group-text" for="inputGroupSelect01">Група</label>
+                      <select class="form-select" id="inputGroupSelect01">
+                        {% for i in form.group %}
+                            {{ i }}
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <div class="input-group mb-3">
+                      <label class="input-group-text" for="inputGroupSelect01">Освітня програма</label>
+                      <select class="form-select" id="inputGroupSelect02">
+                        {% for i in form.educational_program %}
+                            {{ i }}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="inputGroupSelect01">Дата</label>
+                        {{ form.year_entry }}
+                    </div>
+{#                    {{ form.as_p }}#}
+                </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">
+              Close
+            </button>
+            <a class="btn btn-success update" id="" onclick="updateStudent()" data-dismiss="modal">Create</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+{% endblock %}
+
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+    <script src="{% static 'methodist/js/students.js' %}">
+    </script>
+{% endblock %}
