@@ -27,14 +27,15 @@ function createStudent() {
     let educational_program = document.querySelector('#form-edit #inputGroupSelect02')
         .querySelectorAll('option:checked')[0].value;
     let id = document.querySelector('.create-student').id;
+
     $.ajax({
         method: "POST",
         data: {year_entry: year_entry, group: group, educational_program: educational_program},
         headers: {"X-CSRFToken": csrftoken},
-        url: `http://127.0.0.1:8000/add-student/${id}`,
+        url: `/add-student/${id}`,
         success: function (data) {
             if (data.created_student) {
-                $(`#row-${id}`).remove()
+                $(`#row-${id}`).remove();
 
                 $('#form-edit #id_year_entry').val('');
                 $('#form-edit #inputGroupSelect01').val('');

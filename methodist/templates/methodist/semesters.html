@@ -3,13 +3,16 @@
 {% load maintag %}
 
 {% block content %}
-    {{ semesters.semester }}
-    {{ semesters.final_semester }}
-    <br><br><br>
-    {% get_list_semesters semesters.semester semesters.final_semester as semesters_list %}
-    {% for i in semesters_list %}
-        <p><a href="{% url 'rating' semesters.id i %}">{{ i }}</a></p>
-    {% endfor %}
+    <div class="container">
+        {% get_list_semesters semesters.semester semesters.final_semester as semesters_list %}
+        <div class="list-group w-25">
+            {% for i in semesters_list %}
+              <a href="{% url 'rating' semesters.id i %}"
+                 class="list-group-item list-group-item-action">Семестр - {{ i }}</a>
+            {% endfor %}
+          <a href="{% url 'rating-year' semesters.id %}" class="list-group-item list-group-item-action">Річна</a>
+        </div>
+    </div>
 {% endblock %}
 
 {% block js %}

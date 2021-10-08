@@ -54,11 +54,11 @@ function createSubject() {
     $.ajax({
         method: "POST",
         data: {name_subject: nameSubject.value, group: group.value,
-               hours: hours.value, finally_subject: finallySubject.value,
+               hours: hours.value, finally_subject: finallySubject.checked,
                semester: semester.value, teachers: teacherList, final_semester: final_semester.value,
                form_of_control: formOfControl.value, url_on_moodle: urlOnMoodle.value},
         headers: {"X-CSRFToken": csrftoken},
-        url: `http://127.0.0.1:8000/create-subjects/`,
+        url: `/create-subjects/`,
         traditional: true,
         success: function (data) {
             if(data.created_subject){
@@ -73,7 +73,7 @@ function createSubject() {
                         <td id="semester">${ semester.value }</td>
                         <td id="final_semester">${ final_semester.value }</td>
                         <td id="form_of_control">${ formOfControl.value }</td>
-                        <td id="finally_subject">${finallySubject.value ? "Так": "Ні"}</td>
+                        <td id="finally_subject">${finallySubject.checked ? "Так": "Ні"}</td>
                         <td><a href="${ urlOnMoodle.value }" id="link">Посилання на Moodle</a></td>
                         <td><a class="btn btn-warning" data-toggle="modal" data-target="#exampleModal1" onclick="updateForm(${ data.subject_id })">Редагувати</a></td>
                         <td>
@@ -92,7 +92,7 @@ function deleteSubject(id) {
     $.ajax({
         method: "POST",
         headers: {"X-CSRFToken": csrftoken},
-        url: `http://127.0.0.1:8000/delete/${id}`,
+        url: `/delete/${id}`,
         success: function (data) {
             console.log(data)
             if (data.delete) {
@@ -155,9 +155,11 @@ function updateSubject(){
     let teachers = document.querySelector('#id_teachers1').getElementsByTagName('option');
     let urlOnMoodle = document.querySelector('#id_url_on_moodle1').value;
     let formOfControl = document.querySelector('#id_forma_control1').value;
-    let finallySubject = document.querySelector('#finally-subject').value;
+    let finallySubject = document.querySelector('#finally-subject').checked;
     let id = document.querySelector('.button').id;
 
+
+    console.log(document.querySelector('#finally-subject').checked)
     let teacherId = []
     let teacherName = []
 
@@ -191,6 +193,7 @@ function updateSubject(){
                 document.querySelector(`#row_${id} #semester`).innerText = semester;
                 document.querySelector(`#row_${id} #final_semester`).innerText = final_semester;
                 document.querySelector(`#row_${id} #form_of_control`).innerText = formOfControl;
+                document.querySelector(`#row_${id} #finally_subject`).innerText = finallySubject ? "Так" : "Ні";
                 document.querySelector(`#row_${id} #link`).href = urlOnMoodle;
                 document.querySelector(`#row_${id} #loans`).innerText = loans;
                 $(`#row_${id} #teachers`).empty()

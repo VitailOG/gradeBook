@@ -3,31 +3,36 @@
 {% load static %}
 
 {% block content %}
-    <h2 class="text-center">{{ rating.name_subject }}</h2>
-    <div class="container table-responsive">
+    <div class="container">
+        <h2 class="text-center">{{ rating.name_subject }}</h2>
         <table class="table table-striped">
+            {% get_list_semesters rating.semester rating.final_semester as semesters_list %}
             <thead>
-            <tr>
-                <th>id</th>
-                <th>username</th>
-                <th>group</th>
-                <th>5*</th>
-                <th>12*</th>
-                <th>дата</th>
-                <th>перез</th>
-                <th>зар</th>
-                <th>викл</th>
-                <th>дія</th>
-            </tr>
+                <tr>
+                    <th>id</th>
+                    <th>username</th>
+                    {% for i in semesters_list %}
+                        <th class="col-md-2">Семестр {{ i }}</th>
+                    {% endfor %}
+                    <th>5*</th>
+                    <th>12*</th>
+                    <th>дата</th>
+                    <th>перез</th>
+                    <th>зар</th>
+                    <th>викл</th>
+                    <th>дія</th>
+                </tr>
             </thead>
             <tbody>
             {% for i in rating.group.student_set.all %}
+                {% get_rating_of_semesters i.user.username rating.name_subject as semesters_rating %}
+                {% tag2 i.user.username rating.name_subject as exists_rating %}
                 <tr id="user_row_{{ i.user.id }}">
                     <td>{{ i.user.id }}</td>
                     <td>{{ i.user.username }}</td>
-                    <td>{{ i.group.name }}</td>
-                {% get_current_semester request.path as current_semester %}
-                    {% tag i.user.username rating.name_subject current_semester as exists_rating %}
+                    {% for i in semesters_rating %}
+                        <td>{{ i.rating_5 }}</td>
+                    {% endfor %}
                     {% if exists_rating %}
                         <td><input type="number" value="{{ exists_rating.rating_5 }}" name="rating_5" min="1"
                                    id="id_rating_5"></td>
@@ -69,12 +74,11 @@
                             </select>
                         </td>
                     {% endif %}
+
                     <td id="action_{{ i.user.id }}">
                         {% if exists_rating %}
                             <a id="but_{{ i.id }}" class="btn btn-warning"
-                               onclick="updateRating({{ exists_rating.id }},
-                                                     {{ exists_rating.user }},
-                                                     {{ current_semester }})">Оновити</a>
+                               onclick="updateRating({{ exists_rating.id }}, {{ exists_rating.user }})">Оновити</a>
                         {% else %}
                             <a id="but_{{ i.id }}" class="btn btn-success"
                                onclick="createRating({{ i.user.id }}, {{ rating.id }}, {{ current_semester }})">Створити</a>

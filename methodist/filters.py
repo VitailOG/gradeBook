@@ -14,7 +14,7 @@ class StudentFilter(FilterSet):
 
 def filter_student(request, qs):
     if request.GET.get('year_entry'):
-        qs = qs.filter(year_entry=request.GET.get('year_entry'))
+        qs = qs.filter(year_entry__year=request.GET.get('year_entry'))
 
     if request.GET.get('group'):
         qs = qs.filter(group_id=request.GET.get('group'))

@@ -16,6 +16,10 @@ urlpatterns = [
     path('filter-student/', FilterStudentView.as_view(), name="filter-student"),
 
     path('rating/<int:pk>/<int:semester>', RatingView.as_view(), name="rating"),
-    path('create-rating/<int:pk_subject>/<int:pk_user>/<int:semester>', CreateRatingView.as_view(), name="create"),
+    path('rating-year/<int:pk>', RatingYearView.as_view(), name="rating-year"),
+    path('create-rating/<int:pk_subject>/<int:pk_user>', CreateRatingView.as_view(), name="create"),
     path('update-rating/<int:pk>', UpdateRatingView.as_view(), name="update"),
+
+    path('', AuthViews.as_view(), name='auth'),
+    path('logout/', LogoutViews.as_view(), name="logout")
 ]

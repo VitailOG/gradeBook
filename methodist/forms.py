@@ -1,4 +1,7 @@
 from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
+from django.forms import PasswordInput
 
 from .models import CustomUser, Subject, Student, Rating
 
@@ -45,3 +48,12 @@ class RatingForm(forms.ModelForm):
                   'teacher',
                   'semester'
                   )
+
+
+class AuthForm(AuthenticationForm, forms.ModelForm):
+    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Введіть логін'}))
+    password = forms.CharField(widget=PasswordInput(attrs={'placeholder': 'Введіть пароль'}))
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'password')

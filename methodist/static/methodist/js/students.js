@@ -57,7 +57,7 @@ function deleteStudent(id) {
     $.ajax({
         method: "POST",
         headers: {"X-CSRFToken": csrftoken},
-        url: `http://127.0.0.1:8000/delete-student/${id}`,
+        url: `/delete-student/${id}`,
         success: function (data) {
             console.log(data)
             if (data.delete) {
@@ -81,7 +81,7 @@ function updateStudent() {
         method: "POST",
         data: {year_entry: year_entry.value, group: group.value, educational_program: educational_program.value},
         headers: {"X-CSRFToken": csrftoken},
-        url: `http://127.0.0.1:8000/update-student/${id}`,
+        url: `/update-student/${id}`,
         success: function (data) {
             if (data.update) {
                 $(`#date_${id}`).text(year_entry.value)
@@ -117,7 +117,7 @@ function filterStudents(ord = null) {
             user__last_name: l.value ? l.value : "",
         },
         headers: {"X-CSRFToken": csrftoken},
-        url: `http://127.0.0.1:8000/filter-student/`,
+        url: `/filter-student/`,
         success: function (data) {
             console.log(data.students)
             if (data.students.length) {

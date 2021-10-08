@@ -1,18 +1,21 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.views.generic.base import View
+from django.contrib.auth.views import LoginView, LogoutView
 
 from .models import *
-from .forms import SubjectsForm, StudentForm, RatingForm
+from .forms import SubjectsForm, StudentForm, RatingForm, AuthForm
 from .filters import StudentFilter, filter_student
-from .mixins import StudentMixin
+from .mixins import StudentMixin, AbstractRatingMixin
+from .permissions import LoginRequiredAndMethodistMixin
 
 
-class ListSubjectsView(ListView):
+class ListSubjectsView(LoginRequiredAndMethodistMixin, ListView):
     """ List subject on department
     """
     model = Subject
+    # queryset = Subject.objects.select_related('group').prefetch_related('teachers').all()
     template_name = 'methodist/subject.html'
     context_object_name = 'subjects'
 
@@ -23,7 +26,7 @@ class ListSubjectsView(ListView):
         return context
 
 
-class CreateSubjectsView(CreateView):
+class CreateSubjectsView(LoginRequiredAndMethodistMixin, CreateView):
     model = Subject
     form_class = SubjectsForm
     success_url = reverse_lazy('list-subjects')
@@ -33,13 +36,13 @@ class CreateSubjectsView(CreateView):
         return JsonResponse({'created_subject': True, "subject_id": form.instance.id})
 
 
-class SemestersView(DetailView):
+class SemestersView(LoginRequiredAndMethodistMixin, DetailView):
     template_name = 'methodist/semesters.html'
     model = Subject
     context_object_name = 'semesters'
 
 
-class DeleteSubjectsView(DeleteView):
+class DeleteSubjectsView(LoginRequiredAndMethodistMixin, DeleteView):
     model = Subject
     form_class = SubjectsForm
     success_url = reverse_lazy('list-subjects')
@@ -49,19 +52,17 @@ class DeleteSubjectsView(DeleteView):
         return JsonResponse({'delete': True})
 
 
-class UpdateSubjectsView(UpdateView):
+class UpdateSubjectsView(LoginRequiredAndMethodistMixin, UpdateView):
     model = Subject
     form_class = SubjectsForm
     success_url = reverse_lazy('list-subjects')
 
     def form_valid(self, form):
-        print(self.request.POST)
         super().form_valid(form)
         return JsonResponse({'update_subject': True})
 
 
-class CreateStudentView(CreateView):
-    model = Student
+class CreateStudentView(LoginRequiredAndMethodistMixin, CreateView):
     form_class = StudentForm
     success_url = reverse_lazy('without')
 
@@ -71,28 +72,42 @@ class CreateStudentView(CreateView):
         return JsonResponse({'created_student': True})
 
 
-class StudentWithOutGroupView(StudentMixin, ListView):
+# class CreateStudentView(LoginRequiredAndMethodistMixin, View):
+#     form_class = StudentForm
+#
+#     def get(self, request, *args, **kwargs):
+#         form = self.form_class(request.GET)
+#         if form.is_valid():
+#             form = form.save(commit=False)
+#             form.user = CustomUser.objects.filter(id=self.kwargs.get('pk')).first()
+#             # form.user_id = self.kwargs.get('pk')
+#             form.save()
+#         return JsonResponse({'created_student': True})
+
+
+class StudentWithOutGroupView(LoginRequiredAndMethodistMixin, StudentMixin, ListView):
     model = CustomUser
     queryset = CustomUser.objects.exclude(student__year_entry__isnull=False).filter(group_id=1)
     template_name = 'methodist/without_group.html'
     context_object_name = 'students'
 
 
-class StudentsView(StudentMixin, ListView):
+class StudentsView(LoginRequiredAndMethodistMixin, StudentMixin, ListView):
     model = Student
     template_name = 'methodist/students.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = StudentFilter(self.request.GET,
-                           queryset=Student.objects.values('id', 'user__first_name', 'user__last_name',
-                                                           'user__surname', 'year_entry',
-                                                           'educational_program__name', 'group__name'))
+                           queryset=Student.objects
+                           .values('id', 'user__first_name', 'user__last_name',
+                                   'user__surname', 'year_entry',
+                                   'educational_program__name', 'group__name'))
         context['students'] = qs
         return context
 
 
-class UpdateStudentView(UpdateView):
+class UpdateStudentView(LoginRequiredAndMethodistMixin, UpdateView):
     model = Student
     form_class = StudentForm
     success_url = reverse_lazy('list_student')
@@ -102,7 +117,7 @@ class UpdateStudentView(UpdateView):
         return JsonResponse({'update': True})
 
 
-class DeleteStudentView(DeleteView):
+class DeleteStudentView(LoginRequiredAndMethodistMixin, DeleteView):
     model = Student
     success_url = reverse_lazy('list_student')
 
@@ -116,7 +131,7 @@ o = {
 }
 
 
-class FilterStudentView(View):
+class FilterStudentView(LoginRequiredAndMethodistMixin, View):
     def get(self, request, *args, **kwargs):
         ord = self.request.GET.get('ordering')
         if o['ordering'] and o['ordering'] == ord:
@@ -131,18 +146,15 @@ class FilterStudentView(View):
         return JsonResponse({'students': list(qs)})
 
 
-class RatingView(DetailView):
-    model = Subject
+class RatingView(AbstractRatingMixin):
     template_name = 'methodist/rating.html'
-    context_object_name = 'rating'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = RatingForm()
-        return context
 
 
-class CreateRatingView(CreateView):
+class RatingYearView(AbstractRatingMixin):
+    template_name = 'methodist/rating_year.html'
+
+
+class CreateRatingView(LoginRequiredAndMethodistMixin, CreateView):
     model = Rating
     form_class = RatingForm
 
@@ -153,17 +165,26 @@ class CreateRatingView(CreateView):
         return JsonResponse({'create': True, 'rating_id': form.instance.id})
 
     def get_success_url(self):
-        return reverse_lazy('rating', args=(self.kwargs.get('pk_subject'), self.kwargs.get('semester')))
+        return reverse_lazy('without',)
 
 
-class UpdateRatingView(UpdateView):
+class UpdateRatingView(LoginRequiredAndMethodistMixin, UpdateView):
     model = Rating
     form_class = RatingForm
-    # success_url = reverse_lazy('list_subjects')
 
     def form_valid(self, form):
         super().form_valid(form)
         return JsonResponse({'update-rating': True})
 
-    # def get_success_url(self):
-    #     return reverse_lazy('rating', args=(self.kwargs.get('pk_subject'), self.kwargs.get('semester')))
+    def get_success_url(self):
+        return reverse_lazy('without',)
+
+
+class AuthViews(LoginView):
+    template_name = 'methodist/auth.html'
+    form_class = AuthForm
+    success_url = reverse_lazy('list-subjects')
+
+
+class LogoutViews(LogoutView):
+    next_page = 'auth'

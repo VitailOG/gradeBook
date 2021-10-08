@@ -9,3 +9,7 @@ def get_teachers(request):
 def get_educational_program(request):
     group = Group.objects.all()
     return {"group": group}
+
+
+def none(request):
+    return {'none': None}

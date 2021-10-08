@@ -58,7 +58,7 @@ class StudentAdmin(admin.ModelAdmin):
 
 @admin.register(Rating)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'rating_5')
+    list_display = ('id', 'rating_5', 'semester')
 
 
 @admin.register(Permissions)
