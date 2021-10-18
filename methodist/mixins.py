@@ -15,3 +15,7 @@ class StudentMixin:
 class AbstractRatingMixin(DetailView):
     model = Subject
     context_object_name = 'rating'
+    queryset = Subject.objects. \
+        select_related('group'). \
+        prefetch_related('group__student_set__user', 'teachers') \
+        .all()

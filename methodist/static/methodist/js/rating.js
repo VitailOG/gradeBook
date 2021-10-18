@@ -18,6 +18,7 @@ function getCookie(name) {
 var csrftoken = getCookie('csrftoken');
 
 function createRating(userId, ocinkuId, semester=null) {
+    console.log('start')
     let rating_5 = document.querySelector(`#user_row_${userId} #id_rating_5`).value;
     let rating_12 = document.querySelector(`#user_row_${userId} #id_rating_12`).value;
     let date = document.querySelector(`#user_row_${userId} #id_date_rating`).value;
@@ -58,7 +59,7 @@ function createRating(userId, ocinkuId, semester=null) {
                     $(`#action_${userId}`).empty()
                     $(`#action_${userId}`).append(
                         `<a id="but_${userId}" class="btn btn-warning"
-                               onclick="updateRating(${data.rating_id}, ${userId}, ${currentSemester})">Оновити</a>`
+                               onclick="updateRating(${data.rating_id}, ${userId}, ${semester ? semester: null})">Оновити</a>`
                     )
                     console.log(document.querySelector(`#but_${userId}`))
                 }

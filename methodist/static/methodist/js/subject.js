@@ -132,6 +132,8 @@ function updateForm(id){
 
     if(finallySubject === "Так"){
         document.querySelector('#finally-subject').checked = true
+    }else {
+        document.querySelector('#finally-subject').checked = false
     }
 
     for (let i of option) {
@@ -203,5 +205,4 @@ function updateSubject(){
                 groupTd.setAttribute('data-id', $('#id_group1 option:selected').val())
             }
     }})
-
 }

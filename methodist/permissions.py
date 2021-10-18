@@ -1,11 +1,14 @@
-from django.http import HttpResponse
 from django.shortcuts import redirect
 
 
-class LoginRequiredAndMethodistMixin:
+class LoginRequiredAndMethodistPermissions:
+	user = None
+
 	def dispatch(self, request, *args, **kwargs):
 		if request.user.is_authenticated:
-			if request.user.group.name != 'Методист':
+			print(self.user)
+			if request.user.group.name != self.user:
+				print(self.user)
 				return redirect('auth')
 		else:
 			return redirect('auth')

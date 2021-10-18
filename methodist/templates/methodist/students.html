@@ -4,20 +4,11 @@
 {% block content %}
     <div class="container">
         <h1 class="text-center mb-10" id="h1">Наявні студенти</h1>
-
-{#        <form method="get" action="{% url 'list_student' %}">#}
-{#            {{ students.form.as_p }} <br>#}
-{#            <a onclick="filterStudents()" class="btn btn-danger">Пошук</a>#}
-{#            <input type="submit" id="filter" onclick="filterData()">#}
-        </form>
-
-        <hr>
-            <button class="accordion-button" data-toggle="collapse" data-target="#demo">Фільтри</button>
+    <hr>
+                <button class="accordion-button" data-toggle="collapse" data-target="#demo">Фільтри</button>
             <div id="demo" class="collapse">
                 <br>
-                
-                {{ students.form.as_p }} <br>
-
+                {{ student_filter.as_p }} <br>
                 <a onclick="filterStudents()" class="btn btn-danger">Пошук</a>
             </div>
         <hr>
@@ -59,15 +50,15 @@
                 </tr>
                 </thead>
                 <tbody id="tbody">
-                {% for student in students.qs %}
+                {% for student in students %}
                     <tr id="row_{{ student.id }}">
                         <th scope="row">{{ student.id }}</th>
-                        <td>{{ student.user__last_name }}</td>
-                        <td>{{ student.user__first_name }}</td>
-                        <td>{{ student.user__surname }}</td>
+                        <td>{{ student.user.last_name }}</td>
+                        <td>{{ student.user.first_name }}</td>
+                        <td>{{ student.user.surname }}</td>
                         <td id="date_{{ student.id }}">{{ student.year_entry|date:"Y-m-d" }}</td>
-                        <td id="educational_program_{{ student.id }}">{{ student.educational_program__name }}</td>
-                        <td id="group_{{ student.id }}">{{ student.group__name }}</td>
+                        <td id="educational_program_{{ student.id }}">{{ student.educational_program.name }}</td>
+                        <td id="group_{{ student.id }}">{{ student.group.name }}</td>
                         <td data-toggle="modal" data-target="#exampleModal" onclick="getIdStudent('{{ student.id }}')">
                             <a class="btn btn-warning">Редагувати</a>
                         </td>
@@ -80,15 +71,6 @@
             </table>
         </div>
     </div>
-
-
-{#    <div id="form-edit">#}
-{#        {{ form.as_p }}#}
-{#        <a class="update" id="" onclick="updateStudent()">Оновити</a>#}
-{#    </div>#}
-
-
-
 
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -122,7 +104,6 @@
                         <label class="input-group-text" for="inputGroupSelect01">Дата</label>
                         {{ form.year_entry }}
                     </div>
-{#                    {{ form.as_p }}#}
                 </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-dismiss="modal">
@@ -133,7 +114,6 @@
         </div>
       </div>
     </div>
-
 
 
 {% endblock %}

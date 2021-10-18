@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.views.generic.base import View
@@ -8,14 +8,19 @@ from .models import *
 from .forms import SubjectsForm, StudentForm, RatingForm, AuthForm
 from .filters import StudentFilter, filter_student
 from .mixins import StudentMixin, AbstractRatingMixin
-from .permissions import LoginRequiredAndMethodistMixin
+from .permissions import LoginRequiredAndMethodistPermissions
+
+
+class LoginRequiredAndMethodistMixin(LoginRequiredAndMethodistPermissions):
+    user = "Методист"
 
 
 class ListSubjectsView(LoginRequiredAndMethodistMixin, ListView):
     """ List subject on department
     """
+
     model = Subject
-    # queryset = Subject.objects.select_related('group').prefetch_related('teachers').all()
+    queryset = Subject.objects.prefetch_related('teachers').select_related('group').all()
     template_name = 'methodist/subject.html'
     context_object_name = 'subjects'
 
@@ -92,18 +97,17 @@ class StudentWithOutGroupView(LoginRequiredAndMethodistMixin, StudentMixin, List
     context_object_name = 'students'
 
 
-class StudentsView(LoginRequiredAndMethodistMixin, StudentMixin, ListView):
+class StudentsView(StudentMixin, ListView):
     model = Student
     template_name = 'methodist/students.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = StudentFilter(self.request.GET,
-                           queryset=Student.objects
-                           .values('id', 'user__first_name', 'user__last_name',
-                                   'user__surname', 'year_entry',
-                                   'educational_program__name', 'group__name'))
-        context['students'] = qs
+                           queryset=Student.objects.all())
+
+        context['students'] = qs.queryset.select_related('group', 'educational_program', 'user')
+        context['student_filter'] = qs.form
         return context
 
 
