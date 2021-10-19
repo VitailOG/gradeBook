@@ -1,0 +1,19 @@
+{% extends 'methodist/base.html' %}
+{% load student %}
+{% load static %}
+
+{% block content %}
+    {% get_all_semesters_student request.user as semesters %}
+    <select>
+        {% for i in semesters %}
+            <option>{{ i.semester }}</option>
+        {% endfor %}
+    </select>
+    <div id="subjects">
+
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src={% static 'student/js/student_rating.js' %}></script>
+{% endblock %}

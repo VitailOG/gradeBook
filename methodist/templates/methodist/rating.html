@@ -3,7 +3,6 @@
 {% load static %}
 
 {% block content %}
-    {{ request.user }}
     <h2 class="text-center">{{ rating.name_subject }}</h2>
     <div class="container table-responsive">
         <table class="table table-striped">
@@ -24,7 +23,6 @@
             <tbody>
             {% get_current_semester request.path as current_semester %}
             {% tag rating.name_subject current_semester as exists_rating %}
-
             {% for i in rating.group.student_set.all %}
                 <tr id="user_row_{{ i.user.id }}">
                     <td>{{ i.user.id }}</td>

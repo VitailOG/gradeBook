@@ -5,7 +5,8 @@
 {% block content %}
     <div class="container">
         <h2 class="text-center">{{ rating.name_subject }}</h2>
-        <table class="table table-striped">
+        <div class="table-responsive">
+            <table class="table table-striped">
             {% get_list_semesters rating.semester rating.final_semester as semesters_list %}
             <thead>
                 <tr>
@@ -24,32 +25,36 @@
                 </tr>
             </thead>
             <tbody>
+            {% tag2 rating.name_subject as exists_rating %}
+            {% get_rating_of_semesters rating.name_subject as semesters_rating %}
+
             {% for i in rating.group.student_set.all %}
-                {% get_rating_of_semesters i.user.username rating.name_subject as semesters_rating %}
-                {% tag2 i.user.username rating.name_subject as exists_rating %}
+
                 <tr id="user_row_{{ i.user.id }}">
                     <td>{{ i.user.id }}</td>
                     <td>{{ i.user.username }}</td>
-                    {% for i in semesters_rating %}
-                        <td>{{ i.rating_5 }}</td>
+                    {% get_user_ratings_for_semesters i.user.username semesters_rating  as student_ratings %}
+                    {% for i in student_ratings %}
+                        <td>{{ i }}</td>
                     {% endfor %}
-                    {% if exists_rating %}
-                        <td><input type="number" value="{{ exists_rating.rating_5 }}" name="rating_5" min="1"
+                    {% if i.user.id in exists_rating %}
+                        {% get_rating i.user.id exists_rating as rating_student %}
+                        <td><input type="number" value="{{ rating_student.rating_5 }}" name="rating_5" min="1"
                                    id="id_rating_5"></td>
-                        <td><input type="number" value="{{ exists_rating.rating_12 }}" name="rating_12" min="1"
+                        <td><input type="number" value="{{ rating_student.rating_12 }}" name="rating_12" min="1"
                                    id="id_rating_12"></td>
                         <td><input type="date" name="date_rating" required
-                                   value="{{ exists_rating.date_rating|date:'Y-m-d' }}" id="id_date_rating"></td>
-                        <td><input type="checkbox" {% if exists_rating.retransmission %}checked{% endif %}
+                                   value="{{ rating_student.date_rating|date:'Y-m-d' }}" id="id_date_rating"></td>
+                        <td><input type="checkbox" {% if rating_student.retransmission %}checked{% endif %}
                                    name="retransmission" id="id_retransmission"></td>
-                        <td><input type="checkbox" {% if exists_rating.credited %}checked{% endif %}
+                        <td><input type="checkbox" {% if rating_student.credited %}checked{% endif %}
                                    name="credited" id="id_credited"></td>
 
                         <td>
                             <select name="teacher" id="id_teacher">
                                 <option value="">-------</option>
                                 {% for i in rating.teachers.all %}
-                                    {% if i.id == exists_rating.teacher %}
+                                    {% if i == rating_student.teacher %}
                                         <option value="{{ i.id }}" selected>{{ i.username }}</option>
                                     {% else %}
                                         <option value="{{ i.id }}">{{ i.username }}</option>
@@ -76,9 +81,10 @@
                     {% endif %}
 
                     <td id="action_{{ i.user.id }}">
-                        {% if exists_rating %}
+                        {% if i.user.id in exists_rating %}
+                            {% get_rating i.user.id exists_rating as rs %}
                             <a id="but_{{ i.id }}" class="btn btn-warning"
-                               onclick="updateRating({{ exists_rating.id }}, {{ exists_rating.user }})">Оновити</a>
+                               onclick="updateRating({{ rs.id }}, {{ rs.user.id }})">Оновити</a>
                         {% else %}
                             <a id="but_{{ i.id }}" class="btn btn-success"
                                onclick="createRating({{ i.user.id }}, {{ rating.id }}, {{ current_semester }})">Створити</a>
@@ -89,6 +95,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>
     </div>
 {% endblock %}
 

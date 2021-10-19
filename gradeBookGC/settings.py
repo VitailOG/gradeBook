@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure-c&6&s77hrdiviy@bb!xwzmpb-1084&xwk@v%n5usb+bsg4dc#t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-LOGIN_REDIRECT_URL='list-subjects'
+LOGIN_REDIRECT_URL = 'list-subjects'
 
 ALLOWED_HOSTS = []
 
@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django_filters',
 
     'methodist.apps.MethodistConfig',
+    'student.apps.StudentConfig',
 ]
 
 MIDDLEWARE = [
