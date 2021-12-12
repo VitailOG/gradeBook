@@ -6,9 +6,11 @@ def get_teachers(request):
     return {"teachers": teachers}
 
 
-def get_educational_program(request):
-    group = Group.objects.all()
-    return {"group": group}
+def get_group(request):
+    if request.user.is_authenticated:
+        group = Group.objects.filter(department=request.user.department)
+        return {"group": group}
+    return {"group": []}
 
 
 def none(request):

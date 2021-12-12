@@ -21,19 +21,6 @@
         </div>
         </div>
 
-
-    {#        <form method="post" action="" id="form-add-student">#}
-    {#            {% csrf_token %}#}
-{#    <div id="form-edit">#}
-{#        {{ form.as_p }}#}
-{#        <a class="create-student" id="" onclick="createStudent()">Create</a>#}
-{#    </div>#}
-
-{#    <form method="post" action="{% url 'create-student' 1 %}">#}
-{#    {% csrf_token %}#}
-{#        {{ form.as_p }}#}
-{#        <input type="submit">#}
-{#    </form>#}
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -57,6 +44,14 @@
                   <label class="input-group-text" for="inputGroupSelect01">Освітня програма</label>
                   <select class="form-select" id="inputGroupSelect02">
                     {% for i in form.educational_program %}
+                        {{ i }}
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="input-group mb-3">
+                  <label class="input-group-text" for="inputGroupSelect03">Форма навчання</label>
+                  <select class="form-select" id="inputGroupSelect03">
+                    {% for i in form.form_education %}
                         {{ i }}
                     {% endfor %}
                   </select>

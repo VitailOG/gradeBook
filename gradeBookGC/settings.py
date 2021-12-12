@@ -13,9 +13,9 @@ SECRET_KEY = 'django-insecure-c&6&s77hrdiviy@bb!xwzmpb-1084&xwk@v%n5usb+bsg4dc#t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-LOGIN_REDIRECT_URL = 'list-subjects'
+# LOGIN_REDIRECT_URL = 'list-subjects'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -62,7 +62,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'methodist.context_processors.get_educational_program',
+                'methodist.context_processors.get_group',
                 'methodist.context_processors.get_teachers',
                 'methodist.context_processors.none'
             ],

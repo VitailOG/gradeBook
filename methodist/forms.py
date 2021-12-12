@@ -1,17 +1,25 @@
+from typing import Optional
+
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms import PasswordInput
 
-from .models import CustomUser, Subject, Student, Rating
+from .models import CustomUser, Subject, Student, Rating, Group, EducationalProgram
 
 
 class SubjectsForm(forms.ModelForm):
 
+    def __init__(self, user: Optional[str] = None, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+        if user is not None:
+            self.fields['group'].queryset = Group.objects.filter(department=self.user.department)
+        
     teachers = forms.MultipleChoiceField(
         choices=[(i.id, i.username) for i in CustomUser.objects.filter(group__name="Викладач")]
     )
-
+    
     class Meta:
         model = Subject
         fields = ('name_subject',
@@ -27,6 +35,15 @@ class SubjectsForm(forms.ModelForm):
 
 
 class StudentForm(forms.ModelForm):
+    
+    def __init__(self, user: Optional[str] = None, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+        if self.user is not None:
+            self.fields['group'].queryset = Group.objects.filter(department=self.user.department)
+            self.fields['educational_program'].queryset = EducationalProgram.objects.filter(department=self.user.department)
+                
+    
     year_entry = forms.DateField(widget=forms.TextInput(attrs={'type': 'date',
                                                                'style': 'border-bottom-right-radius: .25rem !important;'
                                                                         ' border-top-right-radius: .25rem !important; '
@@ -34,7 +51,7 @@ class StudentForm(forms.ModelForm):
 
     class Meta:
         model = Student
-        fields = ('year_entry', 'group', 'educational_program')
+        fields = ('year_entry', 'group', 'educational_program', 'form_education')
 
 
 class RatingForm(forms.ModelForm):

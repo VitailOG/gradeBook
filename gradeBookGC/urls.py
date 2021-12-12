@@ -7,7 +7,7 @@ from django.conf import settings
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls, name="admin"),
     path('__debug__/', include(debug_toolbar.urls)),
 
     path('', include('methodist.urls')),

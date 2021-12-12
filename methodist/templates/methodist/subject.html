@@ -40,7 +40,7 @@
 
                         <td id="form_of_control">{{ subject.form_of_control }}</td>
                         <td id="finally_subject">{% if subject.finally_subject %}Так{% else %}Ні{% endif %}</td>
-                        <td><a href="{{ subject.url_on_moodle }}" id="link">Посилання на Moodle</a></td>
+                        <td><a href="{{ subject.url_on_moodle }}" id="link" target="blank">Посилання на Moodle</a></td>
                         <td>
                             <a onclick="updateForm('{{ subject.id }}')"  data-toggle="modal" data-target="#exampleModal1" class="btn btn-warning">Редагувати</a>
                         </td>
@@ -83,13 +83,7 @@
         </div>
       </div>
     </div>
-    <br><br><br>
-
-    <br><br>
-    <br>
-
-    <hr>
-    <br><br><br>
+    
     <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -100,10 +94,7 @@
 
             <div class="modal-body">
 
-
-
                 <form action="" method="post" id="form_update">
-                    {% csrf_token %}
                     <p><input type="text" name="name_subject" maxlength="60" required id="id_name_subject1"></p>
                     <p>
 

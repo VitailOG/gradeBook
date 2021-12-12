@@ -30,10 +30,11 @@ class Permissions(models.Model):
 
 
 class Group(models.Model):
-    """Add group
+    """ Add group
     """
     name = models.CharField(verbose_name="Назва групи", max_length=15)
-
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, verbose_name='Відділ', blank=True, null=True)
+    
     def __str__(self):
         return self.name
 
@@ -58,11 +59,18 @@ class CustomUser(AbstractUser):
 class Student(models.Model):
     """ Model for students
     """
+
+    CHOICES_FORM_EDUCATION = (
+        ('Державна', 'Державна'),
+        ('Платна', 'Платна')
+    )
+
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='student')
     year_entry = models.DateField(verbose_name="Рік вступу", null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name="Група", null=True, blank=True)
     educational_program = models.ForeignKey('EducationalProgram', on_delete=models.CASCADE, null=True, blank=True)
-
+    form_education = models.CharField(verbose_name="Форма навчання", max_length=20,  null=True, blank=True, choices=CHOICES_FORM_EDUCATION)
+    
     def __str__(self):
         return self.user.username
 

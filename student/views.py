@@ -14,11 +14,10 @@ class StudentRatingBySemestersView(View):
 class StudentRatingBySemesterView(View):
 
     def get(self, request, *args, **kwargs):
-        print(self.kwargs.get('pk'))
-
+        print(request.GET.get('student_id'))
         student_ratings = Rating.objects.filter(
             semester=self.kwargs.get('pk'),
-            user=self.request.user
+            user_id=request.GET.get('student_id')
         ).select_related(
             'subject'
         ).values(
@@ -27,5 +26,9 @@ class StudentRatingBySemesterView(View):
             'rating_12',
             'retransmission',
             'credited',
+            'date_rating',
+            'teacher__last_name',
+            'teacher__first_name',
+            'teacher__surname'
         )
         return JsonResponse({'s': list(student_ratings)})

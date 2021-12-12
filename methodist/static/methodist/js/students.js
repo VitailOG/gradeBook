@@ -23,11 +23,7 @@ function getIdStudent(id) {
     let i1 = document.querySelector(`#date_${id}`).innerText;
     let i3 = document.querySelector(`#educational_program_${id}`).innerText;
     let i2 = document.querySelector(`#group_${id}`).innerText;
-
-    console.log(update);
-    console.log(i1);
-    console.log(i2);
-    console.log(i3);
+    let i4 = document.querySelector(`#form_education${id}`).innerText;
 
     let options = document.querySelector('#form-edit #inputGroupSelect01').getElementsByTagName('option');
 
@@ -49,14 +45,25 @@ function getIdStudent(id) {
         }
     }
 
+    let option_form = document.querySelector('#form-edit #inputGroupSelect03').getElementsByTagName('option');
+    for (let i of option_form) {
+        console.log(i.innerText)
+        if (i4 === i.innerText) {
+            i.selected = true;
+        } else {
+            i.selected = false;
+        }
+    }
+
     document.querySelector('#form-edit #id_year_entry').value = i1;
+
 }
 
 function deleteStudent(id) {
     console.log(id);
     $.ajax({
         method: "POST",
-        headers: {"X-CSRFToken": csrftoken},
+        headers: { "X-CSRFToken": csrftoken },
         url: `/delete-student/${id}`,
         success: function (data) {
             console.log(data)
@@ -74,23 +81,24 @@ function updateStudent() {
         .querySelectorAll('option:checked')[0];
     let id = document.querySelector('.update').id;
     let update = document.querySelector('.update');
+    let form_education = document.querySelector('#form-edit #inputGroupSelect03').querySelectorAll('option:checked')[0];
 
-    console.log(id)
-    console.log(year_entry.value)
     $.ajax({
         method: "POST",
-        data: {year_entry: year_entry.value, group: group.value, educational_program: educational_program.value},
-        headers: {"X-CSRFToken": csrftoken},
+        data: { year_entry: year_entry.value, group: group.value, educational_program: educational_program.value, form_education: form_education.value },
+        headers: { "X-CSRFToken": csrftoken },
         url: `/update-student/${id}`,
         success: function (data) {
             if (data.update) {
                 $(`#date_${id}`).text(year_entry.value)
                 $(`#group_${id}`).text(group.innerText)
                 $(`#educational_program_${id}`).text(educational_program.innerText)
+                $(`#form_education${id}`).text(form_education.innerText)
 
                 $('#form-edit #id_year_entry').val('');
                 $('#form-edit #id_group').val('');
                 $('#form-edit #id_educational_program').val('');
+                $('#form-edit #inputGroupSelect03').val('');
                 update.setAttribute('id', '');
             }
         }
@@ -116,7 +124,7 @@ function filterStudents(ord = null) {
             user__username: u.value ? u.value : "",
             user__last_name: l.value ? l.value : "",
         },
-        headers: {"X-CSRFToken": csrftoken},
+        headers: { "X-CSRFToken": csrftoken },
         url: `/filter-student/`,
         success: function (data) {
             console.log(data.students)
@@ -132,6 +140,7 @@ function filterStudents(ord = null) {
                                 <td id="date_${i.id}">${i.year_entry}</td>
                                 <td id="educational_program_${i.id}">${i.educational_program__name}</td>
                                 <td id="group_${i.id}">${i.group__name}</td>
+                                <td id="form_education${i.id}">${i.form_education}</td>
                                 <td data-toggle="modal" data-target="#exampleModal" onclick="getIdStudent('${i.id}')">
                                     <a class="btn btn-warning">Редагувати</a>
                                 </td>

@@ -14,6 +14,7 @@ urlpatterns = [
     path('update-student/<int:pk>', UpdateStudentView.as_view(), name="update-student"),
     path('delete-student/<int:pk>', DeleteStudentView.as_view(), name="delete-student"),
     path('filter-student/', FilterStudentView.as_view(), name="filter-student"),
+    path('student-profile/<int:pk>', ProfileStudent.as_view(), name="student-profile"),
 
     path('rating/<int:pk>/<int:semester>', RatingView.as_view(), name="rating"),
     path('rating-year/<int:pk>', RatingYearView.as_view(), name="rating-year"),

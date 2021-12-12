@@ -1,0 +1,276 @@
+{% extends 'methodist/base.html' %}
+{% load student %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    {% get_all_semesters_student student.user.id as semesters %}   
+    <p>{{ student }}</p>
+    
+    <select>
+        {% for i in semesters %}
+            <option>{{ i.semester }}</option>
+        {% endfor %}
+    </select>
+    
+    	<div class="table-responsive">
+    	<table class="table table-striped">
+    		<thead>
+    			<tr>
+    				<th scope="col">
+                    	<p>Предмет</p>   
+                    </th>
+
+                    <th scope="col">
+                        <p>Оцінка 5 системи</p>
+                    </th>
+
+                    <th scope="col">
+                        <p>Оцінка 12 системи</p>
+                    </th>
+                    <th scope="col">
+                        <p>Перездача</p>
+                    </th>
+                    <th scope="col">
+                        <p>Зараховано</p>
+                    </th>
+                    <th scope="col">
+                        <p>Дата</p>
+                    </th>
+                    <th scope="col">
+                        <p>Викладач</p>
+                    </th>
+    			</tr>
+    		<tbody id="gradeBook">
+             
+    		</tbody>
+    	</thead>	
+    	</table>	
+	</div>
+</div>
+{% endblock %}
+
+{% block js %}
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+    
+    <script>
+        //Refactoring
+        let ratings = [];
+        let length_ratings = ratings.length;
+
+        let select = document.querySelector('select')
+        document.addEventListener('DOMContentLoaded', function () {
+            let semester = select.querySelector('option:checked').value
+            $.ajax({
+                method: "GET",
+                data: {'student_id': {{ student.user.id }}},
+                url: `/student/rating-by-semester/${semester}`,
+                success: function (data) {
+                    if(data.s){
+                        $(`#gradeBook`).empty()
+                        let s = 0;
+                        ratings.length = 0;
+                        for(let i of data.s){
+                            ratings.push(i.rating_5)
+                            $(`#gradeBook`).append(`
+                                <tr style="${i.retransmission ? 'background: grey' : ''}">
+                                    <td>
+                                        <div id="subjects">
+                                            ${i.subject__name_subject}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="rating_5">
+                                            ${i.rating_5}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="rating_12">
+                                            ${i.rating_12 === null ? '-' : i.rating_12}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="retransmission">
+                                            ${i.retransmission === true ? 'Перездана' : '-'}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="credited">
+                                            ${i.credited === true ? 'Зараховано' : '-'}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="data">
+                                            ${i.date_rating}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="teacher">
+                                            ${i.teacher__first_name.slice(0,1)}.
+                                            ${i.teacher__surname.slice(0,1)}. 
+                                            ${i.teacher__last_name}
+                                        </div>
+                                    </td>
+                                </tr>
+                            `)
+
+
+                        }
+                        let sum = 0;
+                        for(let i=0; i<ratings.length;i++){
+                            sum += ratings[i]
+                        }
+                        console.log(sum)
+                        $(`#gradeBook`).append(`
+                                <tr>
+                                    <td>
+                                        <div id="subjects">
+                                                    
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="subjects">
+                                                    
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="subjects">
+                                                    
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="subjects">
+                                                    
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="subjects">
+                                                    
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="subjects">
+                                            Середній бал        
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div id="subjects">
+                                            ${(sum / ratings.length).toFixed(2)}
+                                        </div>
+                                    </td>
+                                </tr>
+                            `)
+                    }
+                }
+            })
+        })
+
+select.addEventListener('change', function () {
+    let semester = select.querySelector('option:checked').value
+    $.ajax({
+        method: "GET",
+        data: {'student_id': {{ student.user.id }}},
+        url: `/student/rating-by-semester/${semester}`,
+        success: function (data) {
+            if(data.s){
+                $(`#gradeBook`).empty()
+                let s = 0;
+                ratings.length = 0;
+                for(let i of data.s){   
+                    ratings.push(i.rating_5)
+                    $(`#gradeBook`).append(`
+                        <tr style="${i.retransmission ? 'background: grey' : ''}">
+                            <td>
+                                <div id="subjects">
+                                    ${i.subject__name_subject}
+                                </div>
+                            </td>
+                            <td>
+                                <div id="rating_5">
+                                     ${i.rating_5}
+                                </div>
+                            </td>
+                            <td>
+                                <div id="rating_12">
+                                    ${i.rating_12 === null ? '-' : i.rating_12}
+                                </div>
+                            </td>
+                            <td>
+                                <div id="retransmission">
+                                    ${i.retransmission === true ? 'Перездана' : '-'}
+                                </div>
+                            </td>
+                            <td>
+                                <div id="credited">
+                                    ${i.credited === true ? 'Зараховано' : '-'}
+                                </div>
+                            </td>
+                            <td>
+                                <div id="data">
+                                    ${i.date_rating}
+                                </div>
+                            </td>
+                            <td>
+                                <div id="teacher">
+                                    ${i.teacher__first_name.slice(0,1)}.
+                                    ${i.teacher__surname.slice(0,1)}. 
+                                    ${i.teacher__last_name}
+                                </div>
+                            </td>
+                        </tr>
+                    `)
+                }
+                
+                let sum = 0;
+                for(let i=0; i<ratings.length;i++){
+                    sum += ratings[i]
+                }
+                console.log(sum)
+                $(`#gradeBook`).append(`
+                        <tr>
+                            <td>
+                                <div id="subjects">
+                                            
+                                </div>
+                            </td>
+                            <td>
+                                <div id="subjects">
+                                            
+                                </div>
+                            </td>
+                            <td>
+                                <div id="subjects">
+                                            
+                                </div>
+                            </td>
+                            <td>
+                                <div id="subjects">
+                                            
+                                </div>
+                            </td>
+                            <td>
+                                <div id="subjects">
+                                            
+                                </div>
+                            </td>
+                            <td>
+                                <div id="subjects">
+                                    Середній бал        
+                                </div>
+                            </td>
+                            <td>
+                                <div id="subjects">
+                                    ${(sum / ratings.length).toFixed(3)}
+                                </div>
+                            </td>
+                        </tr>
+                    `) 
+                }
+        }
+    })
+})
+
+</script> 
+{% endblock %}

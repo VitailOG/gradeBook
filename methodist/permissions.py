@@ -6,7 +6,6 @@ class LoginRequiredAndMethodistPermissions:
 
 	def dispatch(self, request, *args, **kwargs):
 		if request.user.is_authenticated:
-			print(self.user)
 			if request.user.group.name != self.user:
 				print(self.user)
 				return redirect('auth')

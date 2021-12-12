@@ -5,15 +5,13 @@ register = template.Library()
 
 
 @register.simple_tag
-def get_all_semesters_student(student):
-    print(student)
+def get_all_semesters_student(student_id):
     semesters = Rating.objects.filter(
-        user=student,
+        user_id=student_id,
         semester__isnull=False
     ).order_by(
         'semester'
     ).values(
         'semester'
     ).distinct()
-    print(semesters)
     return semesters

@@ -44,6 +44,9 @@
                     <th scope="col">
                         <a onclick="filterStudents('group')">Група</a>
                     </th>
+                    <th scope="col">
+                        <a>Форма навчання</a>
+                    </th>
 
                     <th scope="col">Редагувати</th>
                     <th scope="col">Видалити</th>
@@ -53,12 +56,13 @@
                 {% for student in students %}
                     <tr id="row_{{ student.id }}">
                         <th scope="row">{{ student.id }}</th>
-                        <td>{{ student.user.last_name }}</td>
+                        <td><a href="{% url 'student-profile' student.id %}">{{ student.user.last_name }}</a></td>
                         <td>{{ student.user.first_name }}</td>
                         <td>{{ student.user.surname }}</td>
                         <td id="date_{{ student.id }}">{{ student.year_entry|date:"Y-m-d" }}</td>
                         <td id="educational_program_{{ student.id }}">{{ student.educational_program.name }}</td>
                         <td id="group_{{ student.id }}">{{ student.group.name }}</td>
+                        <td id="form_education{{ student.id }}">{{ student.form_education }}</td>
                         <td data-toggle="modal" data-target="#exampleModal" onclick="getIdStudent('{{ student.id }}')">
                             <a class="btn btn-warning">Редагувати</a>
                         </td>
@@ -96,6 +100,14 @@
                       <label class="input-group-text" for="inputGroupSelect01">Освітня програма</label>
                       <select class="form-select" id="inputGroupSelect02">
                         {% for i in form.educational_program %}
+                            {{ i }}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="input-group mb-3">
+                      <label class="input-group-text" for="inputGroupSelect01">Освітня програма</label>
+                      <select class="form-select" id="inputGroupSelect03">
+                        {% for i in form.form_education %}
                             {{ i }}
                         {% endfor %}
                       </select>
